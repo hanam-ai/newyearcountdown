@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Year Countdown</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #1e3c72, #2a5298);
+      color: white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+    #countdown {
+      font-size: 2em;
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .time-box {
+      text-align: center;
+    }
+    .time-box span {
+      display: block;
+      font-size: 3em;
+      font-weight: bold;
+    }
+    #input-section {
+      margin-bottom: 20px;
+    }
+    #message {
+      display: none;
+      font-size: 2em;
+      margin-top: 20px;
+    }
+    #fireworks {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="heading">새해까지 남은 시간</h1>
+  <div id="countdown">
+    <div class="time-box">
+      <span id="days">00</span>
+      일
+    </div>
+    <div class="time-box">
+      <span id="hours">00</span>
+      시간
+    </div>
+    <div class="time-box">
+      <span id="minutes">00</span>
+      분
+    </div>
+    <div class="time-box">
+      <span id="seconds">00</span>
+      초
+    </div>
+  </div>
+
+  <div id="input-section">
+    <input type="text" id="userName" placeholder="이름을 입력하세요" /><br><br>
+    <input type="text" id="goal" placeholder="새해 목표를 입력하세요" /><br><br>
+  </div>
+
+  <div id="fireworks"></div>
+
+  <div id="message"></div>
+
+  <!-- 언어 선택 드롭다운 -->
+  <select id="languageSelect" onchange="changeLanguage()">
+    <option value="ko">한국어</option>
+    <option value="en">English</option>
+  </select>
+
+  <script>
+    // 다국어 텍스트 관리
+    const texts = {
+      ko: {
+        heading: "새해까지 남은 시간",
+        countdownText: ["일", "시간", "분", "초"],
+        placeholderName: "이름을 입력하세요",
+        placeholderGoal: "새해 목표를 입력하세요",
+        message: (name, goal) => `${name}님! 이번 새해 목표도 꼭 이루시길 바라요! 🎉 "${goal}"`,
+      },
+      en: {
+        heading: "Time left until New Year",
+        countdownText: ["Days", "Hours", "Minutes", "Seconds"],
+        placeholderName: "Enter your name",
+        placeholderGoal: "Enter your New Year goal",
+        message: (name, goal) => `${name}! Wishing you success in achieving your goal this year! 🎉 "${goal}"`,
+      },
+    };
+
+    // 언어 변경 함수
+    function changeLanguage() {
+      const language = document.getElementById("languageSelect").value;
+      document.getElementById("heading").textContent = texts[language].heading;
+      document.getElementById("days").textContent = "00";
+      document.getElementById("hours").textContent = "00";
+      document.getElementById("minutes").textContent = "00";
+      document.getElementById("seconds").textContent = "00";
+      
+      document.querySelectorAll(".time-box span")[0].textContent = texts[language].countdownText[0];
+      document.querySelectorAll(".time-box span")[1].textContent = texts[language].countdownText[1];
+      document.querySelectorAll(".time-box span")[2].textContent = texts[language].countdownText[2];
+      document.querySelectorAll(".time-box span")[3].textContent = texts[language].countdownText[3];
+      
+      document.getElementById("userName").placeholder = texts[language].placeholderName;
+      document.getElementById("goal").placeholder = texts[language].placeholderGoal;
+    }
+
+    function updateCountdown() {
+      const newYear = new Date('2025-01-01T00:00:00'); // 새해 날짜
+      const now = new Date();
+      const diff = newYear - now;
+
+      if (diff <= 0) {
+        clearInterval(interval); // 카운트다운 종료
+        showCelebration();
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById('days').textContent = String(days).padStart(2, '0');
+      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+      document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    function showCelebration() {
+      const name = document.getElementById("userName").value || "친구";
+      const goal = document.getElementById("goal").value || "목표를 이루세요!";
+      const language = document.getElementById("languageSelect").value;
+      const message = texts[language].message(name, goal);
+
+      document.getElementById("countdown").style.display = "none";
+      document.getElementById("input-section").style.display = "none";
+      document.getElementById("fireworks").style.display = "block";
+      document.getElementById("message").style.display = "block";
+      document.getElementById("message").textContent = message;
+
+      // 불꽃놀이 효과 (예: CSS 애니메이션 추가 가능)
+      document.getElementById("fireworks").innerHTML = `
+        <h1 style="color: white; margin-top: 40%;">🎆 불꽃놀이! 🎆</h1>
+      `;
+    }
+
+    const interval = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    
+  </script>
+</body>
+</html>
